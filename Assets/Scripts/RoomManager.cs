@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Vuforia;
 
-public class CornerManager : MonoBehaviour
+public class RoomManager : MonoBehaviour
 {
     // need to enable corner creation mode - need to have multiple modes.
     // need to have a way to save/load the corners to a file
