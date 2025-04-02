@@ -9,22 +9,12 @@ public class RoomManager : MonoBehaviour
     // need to enable corner creation mode - need to have multiple modes.
     // need to have a way to save/load the corners to a file
     // need to have a way to clear the corners
+    [SerializeField] public List<GameObject> roomCorners;
+    public HitTestResult lastFoundSurface;
 
     [SerializeField] private GameObject cornerMarker;
-    [SerializeField] private List<GameObject> roomCorners;
-    [SerializeField] private LineRenderer lineRenderer;
-    private HitTestResult lastFoundSurface;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        lineRenderer.loop = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
+    [SerializeField] private DrawManager drawManager;
 
     /**
      * Used in Vuforia's Automatic Hit Test - runs every time a surface is detected
@@ -40,19 +30,18 @@ public class RoomManager : MonoBehaviour
 
         if (roomCorners.Count > 0) {
             // draw a line from the last corner to the current hit
-            lineRenderer.SetPosition(roomCorners.Count, hit.Position);
+            drawManager.DrawPreviewLine();
         }
 
         // if we have 4 corners, connect the last corner to the first corner
         if (roomCorners.Count == 4) {
-            lineRenderer.loop = true;
+            drawManager.FinishRoomLine();
             // to do: turn off plane finder or hit test, stop connecting line.
         }
     }
-
-    // independently draw lines using room corners
-
-
+    /**
+     * Called when the user clicks on the screen
+     */
     public void CreateCornerMarker() {
         if (lastFoundSurface == null) {
             return;
@@ -60,9 +49,6 @@ public class RoomManager : MonoBehaviour
 
         GameObject corner = Instantiate(cornerMarker, lastFoundSurface.Position, lastFoundSurface.Rotation);
         roomCorners.Add(corner);
-
-        lineRenderer.positionCount = roomCorners.Count + 1; // +1 to show the line from the last corner to the current hit
-        lineRenderer.SetPosition(roomCorners.Count - 1, corner.transform.position);
-        lineRenderer.SetPosition(roomCorners.Count, lastFoundSurface.Position);
+        drawManager.AddCornerToLine();
     }
 }
